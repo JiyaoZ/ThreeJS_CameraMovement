@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <style>
+     #blog-threejs canvas { 
+      /* force full-screen of threejs */
+      width: 100%!important; height: 100%!important; 
+      
+      /* set position to fixed starting top-left of screen */
+      /* fixed position causes the threejs to be stationary */
+      position: fixed; top: 0px; left: 0px; 
+      
+      /* if you have other stuff on screen, you want to bring this threejs object behind it */
+      z-index: -1; 
+    }
+  
+  /* some themes may cause a fullscreen background color, so you want to set it transparent to be able to see the threejs */
+  #canvas {
+    background-color: transparent!important;
+  }
+</style>
+<script src="/js/three.min.js"></script>
+</head>
+<body>
+  <div id="blog-threejs"></div>
+
+  <script>
+    
+    var scene, camera, renderer;
+    var geometry, material, cube;
+
+    var mouseX = 0;
+    var mouseY = 0;
+
+    var windowHalfX = window.innerWidth / 2;
+    var windowHalfY = window.innerHeight / 2;
+
+    document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+
+    init();
+    animate();
+
+
+    function init() {
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.01, 100 );
+      camera.position.z = 3;
+      camera.focalLength = 3;
+
+      renderer = new THREE.WebGLRenderer();
+      renderer.setSize( window.innerWidth, window.innerHeight );
+  
+    // this line adds threejs to the entire page, we don't want to do that
+    // document.body.appendChild( renderer.domElement );
+  
+    // set the threejs to render onto the blog post's <div>
+      document.getElementById("blog-threejs").appendChild( renderer.domElement ); 
+
+      camera.position.z = 5;
+
+      geometry = new THREE.BoxGeometry( 1, 1, 1 );
+      material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+      cube = new THREE.Mesh( geometry, material );
+    scene.add( cube );
+
+      renderer.setClearColor( 0xffffff, 1);
+
+      var width = window.innerWidth || 2;
+      var height = window.innerHeight || 2;
+
+      window.addEventListener( 'resize', onWindowResize, false );
+
+    }
+
+    function animate(){
+      requestAnimationFrame( animate );
+
+      render();
+    };
+
+    function render() {
+
+        var timer = 0.0001 * Date.now();
+        cube.rotation.x += 0.01;
+        cube.rotation.y += 0.01;
+
+        camera.position.x += ( mouseX - camera.position.x ) * .05;
+        camera.position.y += ( - mouseY - camera.position.y ) * .05;
+
+        camera.lookAt( scene.position );
+
+      renderer.render(scene, camera);
+
+      }
+
+      function onWindowResize() {
+
+        windowHalfX = window.innerWidth / 2;
+        windowHalfY = window.innerHeight / 2;
+
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+
+
+      }
+
+    function onDocumentMouseMove( event ) {
+
+        mouseX = ( event.clientX - windowHalfX ) / 100;
+        mouseY = ( event.clientY - windowHalfY ) / 100;
+
+      }
+
+
+
+</script>
+</body>
+
+
+</html>
+
